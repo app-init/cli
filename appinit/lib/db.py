@@ -9,7 +9,7 @@ import os
 import json
 import hashlib
 
-from webplatform_cli.lib.config import Settings
+from appinit.lib.config import Settings
 
 class Manager(object):
    

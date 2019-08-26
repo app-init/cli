@@ -160,7 +160,7 @@ class ContainerHandler:
       return container
 
    def create_network(self):
-      return self.client.networks.create(name=self.prefix)
+      return self.client.networks.create(name=self.docker_prefix)
 
    def create_container(self, service, node=False):
       network = self.check_network()

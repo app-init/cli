@@ -1,11 +1,11 @@
 from containers import main
 from docker import APIClient
-import os, webplatform_cli
+import os, appinit 
 
 client = APIClient(base_url="unix://var/run/docker.sock")
 
 def run(service, force=False):
-   path = os.path.dirname(webplatform_cli.__file__)
+   path = os.path.dirname(appinit.__file__)
    prefix = main.settings.get_variable("docker-prefix")
    
    image_name = '%s-base:latest' % prefix

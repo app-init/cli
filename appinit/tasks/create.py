@@ -1,6 +1,5 @@
 from containers import main
-import os, webplatform_cli
-
+import os, importlib, appinit 
 
 def container(client, network, service):
    base_path = main.base_path
@@ -26,8 +25,8 @@ def container(client, network, service):
          "bind": "/home/container/config",
          "mode": "rw",
       },
-      "%s" % os.path.dirname(webplatform_cli.__file__): {
-         "bind": "/home/container/webplatform_cli",
+      "%s" % os.path.dirname(appinit.__file__): {
+         "bind": "/home/container/appinit",
          "mode": "rw",
       },
       "%s" % apps_path: {
@@ -37,11 +36,41 @@ def container(client, network, service):
    }
 
    if "volumes" in settings['container']:
-      for key, path in settings['container']['volumes'].items():
-         volumes[path] = {
-            "bind": "/home/container/%s" % key,
-            "mode": "rw"
-         }
+      for key, value in settings['container']['volumes'].items():
+         found = False
+         path = None
+         
+         try:
+            if "package" in value:
+               if value['type'] == "python":
+                  try:
+                     module = importlib.import_module(value['package'])
+                     
+                     found = True
+                     if "__init__" in module.__file__:
+                        path = os.path.abspath(module.__file__ + '/../') # Have to go back one directory when modules are imported via __init__ 
+                     else:
+                        path = module.__file__ 
+
+                  except ModuleNotFoundError:
+                     print("Package you are trying to map to service volume doesn't exist. Skipping volume")
+
+               else:
+                  print("Current only support package type 'python' for service volume. Skipping volume.")
+
+            else:
+               path = value
+               found = True
+            
+            if found:
+               volumes[path] = {
+                  "bind": "/home/container/%s" % key,
+                  "mode": "rw"
+               }
+         
+         except KeyError:
+            print("You didn't specify a package type.\nCurrent only support package type 'python' for service volume. Skipping volume.")
+            continue
 
    volumes = main.add_volumes(volumes)
 
