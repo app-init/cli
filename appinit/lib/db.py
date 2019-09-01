@@ -57,10 +57,10 @@ class Manager(object):
          Manager.db_host = Manager.config['container']['name']
          Manager.db_port = port
       else:
-         Manager.db_host = "mongodb"
+         Manager.db_host = ""
          Manager.db_port = 27017 
 
-      if "WEBPLATFORM_DEVEL" in os.environ:
+      if "APPINIT_DEVEL" in os.environ:
          Manager.mongo_client = MongoClient("localhost", 27017, connect=False)
       else:
          Manager.mongo_client = MongoClient(Manager.db_host, Manager.db_port, connect=False)
@@ -116,22 +116,22 @@ class Manager(object):
 
       return cursor
 
-   def get_application(self, module=None, app=None):
-      applications = self.settings.get_variable("applications-configs")
+   def get_route(self, module=None, route=None):
+      routes = self.settings.get_variable("route-configs")
 
-      if app is not None:
-         for a in applications:
-            if a['name'] == app:
+      if route is not None:
+         for r in routes:
+            if r['name'] == route:
                return a['title']
 
          return None
       else:
          if module == None:
-            return applications
+            return routes
 
-         for app in applications:
-            if app['api']['name'] == module.split(".")[0]:
-               return app['name']
+         for route in applications:
+            if route['api']['name'] == module.split(".")[0]:
+               return route['name']
 
          return "system"
 

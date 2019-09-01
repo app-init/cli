@@ -20,7 +20,7 @@ commands for the controller are:
    reset        Reset
    config       Commands for setting or getting config
    variables    Commands for setting webplatform variables
-   apps         Commands for interfacing with application configuration
+   routes       Commands for interfacing with route configuration
 
 See 'app-init' <command> -h' for more information on a specific command.
 """
@@ -35,7 +35,7 @@ commands = [
    "stop",
    "restart",
    "variables",
-   "apps",
+   "routes",
    "config",
    "reset"
 ]

@@ -53,24 +53,24 @@ list of variables you have access to get and set
 
    return args
 
-def apps(command, argv):
+def routes(command, argv):
    doc = """usage: 
-   appinit apps <app-command> <app-name>
-   appinit apps <app-command>
+   appinit routes <route-command> <route-name>
+   appinit routes <route-command>
 
-list of commands to be run against apps
+list of commands to be run against routes
    add               Add an application to webplatform.
-                     Configuation will be checked and a valid `apps-path variable needs to be set
-   remove            Remove an app from webplatform
-   enable            Enable an app after it's been disabled
-   disable           Disable an app to be bundle in with backend and frontend services
-   list              List all application webplatform is currently tracking
+                     Configuation will be checked and a valid `routes-path variable needs to be set
+   remove            Remove an route from webplatform
+   enable            Enable an route after it's been disabled
+   disable           Disable an route to be bundle in with backend and frontend services
+   list              List all routes appinit is currently tracking
 """
 
    argv.insert(0, command)
    args = docopt(doc, argv=argv)
 
-   if args['<app-command>'] not in ["add", "remove", "enable", "disable", "list"]:
+   if args['<route-command>'] not in ["add", "remove", "enable", "disable", "list"]:
       sys.stderr.write(doc)
       sys.exit(1)
 
@@ -160,12 +160,12 @@ def parser(command, args, debug=False, force=False):
 
    elif command == 'apps':
       kwargs = {
-         'command': subargs['<app-command>'],
-         'app': None,
+         'command': subargs['<route-command>'],
+         'route': None,
       }
       
-      if subargs['<app-command>'] in ["add", "remove", "enable", "disable"]:
-         kwargs['app'] = subargs['<app-name>']
+      if subargs['<route-command>'] in ["add", "remove", "enable", "disable"]:
+         kwargs['route'] = subargs['<route-name>']
 
    else:
       ctrl['params'] = subargs['<args>']

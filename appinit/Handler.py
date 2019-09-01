@@ -27,8 +27,8 @@ class CLI(object):
       elif command == "variables":
          self.parse_variables(**params)
       
-      elif command == "apps":
-         self.parse_apps(**params)
+      elif command == "routes":
+         self.parse_routes(**params)
      
       elif command in ["start", "restart", "stop", "update", "reset"]:
          if len(params) > 0:
@@ -104,73 +104,73 @@ class CLI(object):
 
       self.config("set", "variables", config=config, default=default)
    
-   def parse_apps(self, command=None, app=None, default=False):
+   def parse_routes(self, command=None, route=None, default=False):
       config = self.settings.get_config("variables")
-      apps = self.settings.get_variable("applications")
-      apps_path = self.settings.get_variable("apps-path")
-      apps_configs = self.settings.get_variable("applications-configs")
+      routes = self.settings.get_variable("routes")
+      routes_path = self.settings.get_variable("routes-path")
+      route_configs = self.settings.get_variable("route-configs")
 
-      if len(apps) == 0 and command in ["list", "enable", "disable", "remove"]:
-         print("Currently not tracking any applications.\nPlease add an application if you'd like to run '%s'" % command)
+      if len(routes) == 0 and command in ["list", "enable", "disable", "remove"]:
+         print("Currently not tracking any routes.\nPlease add a route if you'd like to run '%s'" % command)
          sys.exit(1)
 
-      if app in apps and command == "add":
-         print("Application '%s' is currently already being tracked." % app)
+      if route in routes and command == "add":
+         print("Route '%s' is currently already being tracked." % route)
          sys.exit(1)
 
       if command == "add":
-         if "," in app:
-            apps += app.strip().split(",")
+         if "," in route:
+            routs += route.strip().split(",")
          else:
-            apps.append(app)
+            routes.append(route)
 
-         app_config, error = self.settings.find_app(app)
+         route_config, error = self.settings.find_app(route)
          if error is not None:
             if error == "json parse error":
-               print("Error parsing `app.json` for app `%s`" % app)
+               print("Error parsing `app.json` for route `%s`" % route)
             elif error == "app no config":
-               print("Application `%s` doesn't have a `app.json` file." % app)
+               print("Application `%s` doesn't have a `app.json` file." % route)
             elif error == "no app dir":
-               print("Application '%s' isn't a directory in `apps-path` (%s) variable." % (app, config['apps-path']))
+               print("Application '%s' isn't a directory in `apps-path` (%s) variable." % (route, config['routes-path']))
 
             sys.exit(1)
          else:
             # Relative paths used in app.json configs.
             # Need to add those relative paths based on apps-path variable
-            app_config['frontend']['path'] = os.path.join(apps_path, app, app_config['frontend']['path'])
-            app_config['api']['path'] = os.path.join(apps_path, app, app_config['api']['path'])
-            app_config['app-dir-name'] = app
-            app_config['active'] = True
-            apps_configs.append(app_config)
+            route_config['frontend']['path'] = os.path.join(routes_path, route, route_config['frontend']['path'])
+            route_config['api']['path'] = os.path.join(routes_path, route, route_config['api']['path'])
+            route_config['route-dir-name'] = route
+            route_config['active'] = True
+            route_configs.append(route_config)
 
-            self.parse_variables(command="set", variable="applications", value=apps)
-            self.parse_variables(command="set", variable="applications-configs", value=apps_configs)
+            self.parse_variables(command="set", variable="routes", value=routes)
+            self.parse_variables(command="set", variable="applications-configs", value=route_configs)
 
-         print(",".join(apps))
+         print(",".join(routes))
 
       elif command == "list":
          print(",".join(current_value))
          sys.exit(1)
       
       elif command in ["enable", "disable"]:
-         new_apps_configs = []
-         for app_config in apps_configs:
-            if app_config['app-dir-name'] == app:
-               app_config['active'] = command == "enable"
+         new_route_configs = []
+         for route_config in route_configs:
+            if route_config['route-dir-name'] == route:
+               route_config['active'] = command == "enable"
             
-            new_apps_configs.append(app_config)
+            new_route_configs.append(route_config)
 
-         self.parse_variables(command="set", variable="applications-configs", value=new_apps_configs)
+         self.parse_variables(command="set", variable="route-configs", value=new_route_configs)
 
       elif command == "remove":
-         if app not in apps:
-            print("Application requested '%s' to remove doesn't exist" % app)
+         if route not in routes:
+            print("Route requested '%s' to remove doesn't exist" % route)
          else:
-            new_apps_configs = [i for i in apps_configs if i['app-dir-name'] != app]
-            new_apps = [i for i in apps if i != app]
+            new_route_configs = [i for i in route_configs if i['route-dir-name'] != route]
+            new_routes = [i for i in routes if i != route]
 
-            self.parse_variables(command="set", variable="applications", value=new_apps)
-            self.parse_variables(command="set", variable="applications-configs", value=new_apps_configs)
+            self.parse_variables(command="set", variable="applications", value=new_routes)
+            self.parse_variables(command="set", variable="applications-configs", value=new_route_configs)
    
    def setup(self):
       from tasks import build

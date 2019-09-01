@@ -23,6 +23,9 @@ class Settings(object):
 
    def __new__(cls, *args, **kwargs):
       if Settings.__object is None:
+         if "path" not in kwargs:
+            kwargs['path'] = os.path.abspath(os.path.join(os.path.realpath(__file__), "../"))
+         
          Settings.__object = object.__new__(cls)
          Settings.__object.__set_class(*args, **kwargs)
 
@@ -122,18 +125,18 @@ class Settings(object):
       except OSError:
          return actions
 
-   def find_app(self, app_name):
-      apps_path = self.get_variable("apps-path")
-      app_dir = os.path.join(apps_path, app_name)      
-      app_has_dir = os.path.isdir(app_dir)
+   def find_route(self, route_name):
+      routes_path = self.get_variable("routes-path")
+      route_dir = os.path.join(routes_path, route_name)      
+      route_has_dir = os.path.isdir(app_dir)
 
-      if app_has_dir:
-         app_config_path = os.path.join(app_dir, "app.json")
-         app_has_config = os.path.isfile(app_config_path)
+      if route_has_dir:
+         route_config_path = os.path.join(route_dir, "route.json")
+         route_has_config = os.path.isfile(route_config_path)
 
-         if app_has_config:
+         if route_has_config:
             try:
-               return json.load(open(app_config_path)), None
+               return json.load(open(route_config_path)), None
             except:
                return False, "json parse error"
          else:
@@ -142,8 +145,8 @@ class Settings(object):
          return False, "no app dir"
 
 
-   def list_applications(self):
-      return self.get_variable("applications")
+   def list_routes(self):
+      return self.get_variable("routes")
 
    def __find_configs(self):
       path = "%s/settings/" % self.__base_path
