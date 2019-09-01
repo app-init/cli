@@ -1,10 +1,10 @@
 {
-  "apps-path": {
+  "routes-path": {
     "rel": true,
     "path": "~/app-init"
   },
-  "applications": [],
-  "applications-configs": [],
+  "routes": [],
+  "route-configs": [],
   "services": ["mongodb", "nginx", "auth", "api"],
   "docker-prefix": "appinit"
 }
