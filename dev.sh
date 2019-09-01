@@ -1,4 +1,4 @@
-python setup.py -q install
+# python setup.py -q install
 # webplatform-cli $@
 appinit variables set apps-path ~/git/platform/applications
 appinit apps add SupportExceptions
