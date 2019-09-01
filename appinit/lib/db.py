@@ -129,7 +129,7 @@ class Manager(object):
          if module == None:
             return routes
 
-         for route in applications:
+         for route in routes:
             if route['api']['name'] == module.split(".")[0]:
                return route['name']
 
