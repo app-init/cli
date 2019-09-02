@@ -1,10 +1,18 @@
 {
-  "routes-path": {
-    "rel": true,
-    "path": "~/app-init"
-  },
+  "routes-path": "/Users/mowens/git/platform/applications",
+  "smtp": "smtp.corp.redhat.com",
+  "reply-to": "cee-tools@redhat.com",
+  "admins": ["mowens@redhat.com"],
+  "app-title": "CEE-Tools",
+  "issue-tracker": "https://gitlab.cee.redhat.com/mowens/cee-tools",
+  "issue-tracker-type": "gitlab",
   "routes": [],
   "route-configs": [],
-  "services": ["mongodb", "nginx", "auth", "api"],
+  "services": [
+    "mongodb",
+    "nginx",
+    "auth",
+    "api"
+  ],
   "docker-prefix": "appinit"
 }

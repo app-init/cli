@@ -24,7 +24,7 @@ class Settings(object):
    def __new__(cls, *args, **kwargs):
       if Settings.__object is None:
          if "path" not in kwargs:
-            kwargs['path'] = os.path.abspath(os.path.join(os.path.realpath(__file__), "../"))
+            kwargs['path'] = os.path.abspath(os.path.join(os.path.realpath(__file__), "../../"))
          
          Settings.__object = object.__new__(cls)
          Settings.__object.__set_class(*args, **kwargs)
