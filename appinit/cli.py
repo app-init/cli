@@ -14,6 +14,8 @@ Options:
 commands for the controller are:
    setup        Build containters
    update       *not finished* Local dependancy update
+   run          Run one of our service. If a service isn't 
+                found the raw string is used as the command to be executed on the container.
    start        Start
    stop         Stop
    restart      Restart
@@ -31,6 +33,7 @@ sys.dont_write_bytecode = True
 
 commands = [
    "setup",
+   "run",
    "start",
    "stop",
    "restart",

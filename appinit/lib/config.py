@@ -128,7 +128,7 @@ class Settings(object):
    def find_route(self, route_name):
       routes_path = self.get_variable("routes-path")
       route_dir = os.path.join(routes_path, route_name)      
-      route_has_dir = os.path.isdir(app_dir)
+      route_has_dir = os.path.isdir(route_dir)
 
       if route_has_dir:
          route_config_path = os.path.join(route_dir, "route.json")
@@ -140,9 +140,9 @@ class Settings(object):
             except:
                return False, "json parse error"
          else:
-            return False, "app no config"
+            return False, "route no config"
       else:
-         return False, "no app dir"
+         return False, "no route dir"
 
 
    def list_routes(self):

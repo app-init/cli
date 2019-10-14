@@ -36,15 +36,29 @@ class CLI(object):
                self.run_container(service=i, action=command)
          else:
             self.run_container(action=command)
+      elif command == 'run':
+         self.run_command(params['params'])
+
+   def run_command(self, service):
+      from Docker import ContainerHandler
+      
+      container = ContainerHandler(self.settings, self.client, self.options)
+      container.run_command(service)
 
    def run_container(self, service=None, action=None):
       from Docker import ContainerHandler
       
       container = ContainerHandler(self.settings, self.client, self.options)
       if service == None:
-         container.run(action)
+         if action == "run":
+            print("You must specify a service you'd like to run or a command to be run.")
+         else:
+            container.run(action)
       else:
-         container.run_service(service, action)
+         if action == "run":
+            container.run_command(service)
+         else:
+            container.run_service(service, action)
 
    def config(self, command, service, path=None, config=None, default=False):
       from lib.config import Settings
@@ -124,27 +138,29 @@ class CLI(object):
          else:
             routes.append(route)
 
-         route_config, error = self.settings.find_app(route)
+         route_config, error = self.settings.find_route(route)
          if error is not None:
             if error == "json parse error":
-               print("Error parsing `app.json` for route `%s`" % route)
-            elif error == "app no config":
-               print("Application `%s` doesn't have a `app.json` file." % route)
-            elif error == "no app dir":
-               print("Application '%s' isn't a directory in `apps-path` (%s) variable." % (route, config['routes-path']))
+               print("Error parsing `route.json` for route `%s`" % route)
+            elif error == "route no config":
+               print("Route `%s` doesn't have a `route.json` file." % route)
+            elif error == "no route dir":
+               print("Route '%s' isn't a directory in `routes-path` (%s) variable." % (route, config['routes-path']))
 
             sys.exit(1)
          else:
             # Relative paths used in app.json configs.
             # Need to add those relative paths based on apps-path variable
-            route_config['frontend']['path'] = os.path.join(routes_path, route, route_config['frontend']['path'])
+            if 'frontend' in route_config:
+               route_config['frontend']['path'] = os.path.join(routes_path, route, route_config['frontend']['path'])
+            
             route_config['api']['path'] = os.path.join(routes_path, route, route_config['api']['path'])
             route_config['route-dir-name'] = route
             route_config['active'] = True
             route_configs.append(route_config)
 
             self.parse_variables(command="set", variable="routes", value=routes)
-            self.parse_variables(command="set", variable="applications-configs", value=route_configs)
+            self.parse_variables(command="set", variable="route-configs", value=route_configs)
 
          print(",".join(routes))
 
@@ -169,8 +185,8 @@ class CLI(object):
             new_route_configs = [i for i in route_configs if i['route-dir-name'] != route]
             new_routes = [i for i in routes if i != route]
 
-            self.parse_variables(command="set", variable="applications", value=new_routes)
-            self.parse_variables(command="set", variable="applications-configs", value=new_route_configs)
+            self.parse_variables(command="set", variable="routes", value=new_routes)
+            self.parse_variables(command="set", variable="route-configs", value=new_route_configs)
    
    def setup(self):
       from tasks import build

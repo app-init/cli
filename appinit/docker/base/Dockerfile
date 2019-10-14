@@ -28,8 +28,6 @@ RUN yum install -y \
    nginx \
    procps \
    git \
-   openssl \ 
-   openssl-devel \
    numactl \
    nodejs
 

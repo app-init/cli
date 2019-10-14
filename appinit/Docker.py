@@ -25,15 +25,16 @@ class ContainerHandler:
       self.docker_prefix = self.settings.get_variable("docker-prefix")
 
    def run(self, action):
-      run = getattr(self, action, None)
-      if run != None and isinstance(run, collections.Callable):
-         run()
-      elif action in ["start", "stop", "restart"]:
+      if action in ["start", "stop", "restart"]:
          for service in self.services:
             self.run_service(service, action)
 
    def run_service(self, service, action):
       check = self.check_running(service)
+
+      if not self.check_image():
+         print("You must setup appinit before trying to start a service. Please run the 'setup' first.")
+         sys.exit()
       
       if type(check) is list:
          for check_container in check:
@@ -47,6 +48,9 @@ class ContainerHandler:
 
          if container and "exited" in container.status and action != "stop":
             print("Service ('%s') has encounter an error, either rebuild the container or start the container using the '-f' |'--force' flag." % service)
+
+   def run_command(self, service):
+      print(service)
 
    def __eval_container(self, container, service, action, node=False):
 
@@ -142,6 +146,8 @@ class ContainerHandler:
          else:
             print("Service doesn't have an update action.")
             sys.exit()
+      elif action == "run":
+         pass
 
       if has_script:
          print("Found '%s' script for '%s' container.\nContainer output." % (action, service))
@@ -176,6 +182,16 @@ class ContainerHandler:
       for container in self.client.containers.list(all=True):
          if name in container.name:
             return container
+      
+      return False
+
+   def check_image(self):
+      name = "%s-base" % (self.docker_prefix)
+
+      for image in self.client.images.list(all=True):
+         for tag in image.tags:
+            if name in tag:
+               return True
       
       return False
 

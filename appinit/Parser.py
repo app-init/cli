@@ -43,7 +43,7 @@ def variables(command, argv):
    appinit variables get
 
 list of variables you have access to get and set
-   apps-path         Directory where applications are stored.
+   routes-path       Directory where routes are stored.
                      Default value is /home/$user/
    services          Allow for services to be specified in cli config
 """
@@ -59,9 +59,9 @@ def routes(command, argv):
    appinit routes <route-command>
 
 list of commands to be run against routes
-   add               Add an application to webplatform.
+   add               Add an route to appinit.
                      Configuation will be checked and a valid `routes-path variable needs to be set
-   remove            Remove an route from webplatform
+   remove            Remove an route from appinit
    enable            Enable an route after it's been disabled
    disable           Disable an route to be bundle in with backend and frontend services
    list              List all routes appinit is currently tracking
@@ -97,6 +97,23 @@ options:
       sys.stderr.write(doc)
       sys.exit(1)
 
+def run(command, argv):
+   argv.insert(0, command)
+   valid_args = set(services)
+   args_doc = '\n   '.join(sorted(valid_args))
+   doc = """usage:
+   appinit [options] run <command>
+
+options:
+   -h --help     Print this help message
+
+run the following processies or specify a raw string to be run:
+   %s
+""" % args_doc
+
+   args = docopt(doc, argv=argv)
+   return args 
+
 def noargs(command, argv):
    argv.insert(0,command)
    doc = """usage:
@@ -117,14 +134,16 @@ def parser(command, args, debug=False, force=False):
 
    if command in ['start', 'restart', 'stop', 'reset']:
       subargs = service(command, args)
+   elif command == 'run':
+      subargs = run(command, args)
    elif command == 'setup':
       subargs = noargs(command, args)
    elif command == 'config':
       subargs = config(command, args)
    elif command == 'variables':
       subargs = variables(command, args)
-   elif command == 'apps':
-      subargs = apps(command, args)
+   elif command == 'routes':
+      subargs = routes(command, args)
 
    if debug:
       print(args)
@@ -158,7 +177,7 @@ def parser(command, args, debug=False, force=False):
       if "<value>" in subargs:
          kwargs['value'] = subargs['<value>']
 
-   elif command == 'apps':
+   elif command == 'routes':
       kwargs = {
          'command': subargs['<route-command>'],
          'route': None,
@@ -166,6 +185,12 @@ def parser(command, args, debug=False, force=False):
       
       if subargs['<route-command>'] in ["add", "remove", "enable", "disable"]:
          kwargs['route'] = subargs['<route-name>']
+
+   elif command == 'run':
+      kwargs = {
+         'command': ctrl['command'],
+         'params': [subargs['<command>']]
+      }
 
    else:
       ctrl['params'] = subargs['<args>']
