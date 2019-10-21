@@ -12,7 +12,7 @@ class CLI(object):
          "force": self.force,
       }
 
-      self.client = docker.DockerClient(base_url="unix://var/run/docker.sock")
+      self.client = docker.DockerClient(base_url="unix://var/run/docker.sock", version='auto')
       self.services = self.settings.get_service()
       self.base_path = settings.get_path()
 
