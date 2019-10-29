@@ -19,7 +19,7 @@ uWSGI==2.0.14
 gevent==1.1.2
 querystring-parser==1.2.3
 markdown2==2.3.4
-Flask==0.11.1
+Flask==1.0
 ldap3==1.2.2
 lxml==3.6.0
 six==1.10.0
