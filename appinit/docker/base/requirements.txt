@@ -18,7 +18,7 @@ python-dateutil==2.5.3
 uWSGI==2.0.14
 gevent==1.1.2
 querystring-parser==1.2.3
-markdown2==2.3.4
+markdown2==2.4.0
 Flask==0.11.1
 ldap3==1.2.2
 lxml==3.6.0
